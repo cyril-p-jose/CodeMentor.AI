@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codementor - Polyglot Code Generator (Python, C, Java, Javascript)</title>
+  <meta name="description" content="Generate programming solutions in Python, C, Java, and JavaScript side-by-side with complexity comparisons and live JavaScript terminal sandbox execution.">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Prism.js Premium Dark Syntax Highlighting Theme -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  
+  <!-- FontAwesome for Premium SVG Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation & Query History -->
+    <aside>
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <div class="brand-name">Codementor</div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Recent Queries</h3>
+        <ul class="history-list" id="history-list">
+          <li class="history-item active" onclick="loadDemoQuestion('Two Sum')">Two Sum</li>
+          <li class="history-item" onclick="loadDemoQuestion('Fibonacci')">Fibonacci Sequence</li>
+          <li class="history-item" onclick="loadDemoQuestion('Bubble Sort')">Bubble Sort</li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-footer">
+        <button class="btn-settings" id="open-settings-btn">
+          <i class="fa-solid fa-gear"></i>
+          Settings
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Display -->
+    <main>
+      
+      <!-- Top Sticky Header -->
+      <div class="top-header">
+        <div class="status-indicator">
+          <div class="status-dot" id="status-dot"></div>
+          <span id="status-text">Demo Mode (Key Unconfigured)</span>
+        </div>
+        <div>
+          <!-- Quick link or extra stats if needed -->
+        </div>
+      </div>
+
+      <!-- Scrollable Main Viewport -->
+      <div class="view-shell" id="view-shell">
+        
+        <!-- Welcome Screen -->
+        <div class="welcome-container" id="welcome-container">
+          <h1 class="welcome-title">What would you like to build?</h1>
+          <p class="welcome-subtitle">Type your question below to generate beautiful, optimized solutions in 4 languages.</p>
+        </div>
+
+        <!-- Central Glowing Search Bar -->
+        <div class="search-container">
+          <form class="search-form" id="search-form">
+            <input type="text" class="search-input" id="search-input" placeholder="e.g., Check if a string is a palindrome, implement binary search..." required autocomplete="off">
+            <button type="submit" class="search-button">
+              <span>Generate</span>
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Suggestion Chips for Fast Interaction -->
+        <div class="suggestions-wrapper" id="suggestions-wrapper">
+          <button class="suggestion-chip" onclick="applySuggestion('Reverse a string')">Reverse a string</button>
+          <button class="suggestion-chip" onclick="applySuggestion('Prime number checker')">Prime number check</button>
+          <button class="suggestion-chip" onclick="applySuggestion('Solve Two Sum')">Two Sum</button>
+          <button class="suggestion-chip" onclick="applySuggestion('Implement binary search')">Binary Search</button>
+        </div>
+
+        <!-- Loading Shimmer Skeleton (Hidden by default) -->
+        <div class="shimmer-wrapper" id="shimmer-wrapper">
+          <div class="shimmer-line title"></div>
+          <div class="complexity-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 800px; margin: 0 auto;">
+            <div class="shimmer-line" style="height: 60px;"></div>
+            <div class="shimmer-line" style="height: 60px;"></div>
+            <div class="shimmer-line" style="height: 60px;"></div>
+            <div class="shimmer-line" style="height: 60px;"></div>
+          </div>
+          <div class="code-board">
+            <div class="shimmer-line large-block"></div>
+            <div class="shimmer-line large-block"></div>
+          </div>
+        </div>
+
+        <!-- Primary Output Grid -->
+        <div class="code-board" id="output-board" style="display: none;">
+          
+          <!-- Code Viewer Frame (Tabs, Action line, Prism block) -->
+          <div class="code-viewer-card">
+            <div class="tab-header">
+              <button class="tab-btn active" data-lang="python" onclick="switchLanguage('python')">
+                <i class="fa-brands fa-python" style="color: var(--lang-python);"></i> Python
+              </button>
+              <button class="tab-btn" data-lang="c" onclick="switchLanguage('c')">
+                <i class="fa-solid fa-c" style="color: var(--lang-c);"></i> C
+              </button>
+              <button class="tab-btn" data-lang="java" onclick="switchLanguage('java')">
+                <i class="fa-brands fa-java" style="color: var(--lang-java);"></i> Java
+              </button>
+              <button class="tab-btn" data-lang="javascript" onclick="switchLanguage('javascript')">
+                <i class="fa-brands fa-js" style="color: var(--lang-javascript);"></i> JavaScript
+              </button>
+            </div>
+            
+            <div class="code-frame-wrapper">
+              <div class="code-action-row">
+                <button class="btn-code-action" onclick="copyCodeToClipboard()">
+                  <i class="fa-regular fa-copy"></i> Copy Code
+                </button>
+                <button class="btn-code-action" id="btn-run-js" onclick="runJavaScriptCode()" style="display: none;">
+                  <i class="fa-solid fa-play" style="color: var(--lang-javascript);"></i> Run Output
+                </button>
+              </div>
+              <pre class="code-content-pre"><code class="language-python" id="code-display"># Generated python code will load here...</code></pre>
+            </div>
+          </div>
+
+          <!-- Complexity & Explanations sidebar -->
+          <div class="detail-board-card">
+            
+            <div class="info-glass-box">
+              <h3 class="box-title">
+                <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i>
+                Algorithm Approach
+              </h3>
+              <p class="explanation-text" id="algorithm-explanation">
+                No question searched yet. Submit a query to see language-specific explanations.
+              </p>
+              
+              <div class="complexity-grid">
+                <div class="complexity-card">
+                  <div class="complexity-label">Time Complexity</div>
+                  <div class="complexity-val" id="time-complexity">O(1)</div>
+                </div>
+                <div class="complexity-card">
+                  <div class="complexity-label">Space Complexity</div>
+                  <div class="complexity-val" id="space-complexity">O(1)</div>
+                </div>
+              </div>
+              
+              <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                <div class="complexity-label" style="margin-bottom: 0.5rem;">Expected Execution Output</div>
+                <pre id="expected-output" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); color: #34d399; margin: 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">No output captured.</pre>
+              </div>
+            </div>
+
+            <!-- JavaScript Interactive Console Playground -->
+            <div class="terminal-panel" id="terminal-panel" style="display: none;">
+              <div class="terminal-header">
+                <span class="terminal-title">
+                  <i class="fa-solid fa-terminal" style="color: #a3e635;"></i>
+                  JavaScript Console Emulator
+                </span>
+                <div class="terminal-controls">
+                  <span class="term-dot red"></span>
+                  <span class="term-dot yellow"></span>
+                  <span class="term-dot green"></span>
+                </div>
+              </div>
+              <div class="terminal-body" id="terminal-body">
+                <div class="terminal-row term-empty">Press 'Run Output' above to execute this code inside the browser.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Cross-Language Matrix Comparison -->
+        <div class="compare-matrix-card" id="compare-matrix-card" style="display: none;">
+          <h3 class="box-title">
+            <i class="fa-solid fa-table-list" style="color: var(--accent-cyan);"></i>
+            Polyglot Design Comparison
+          </h3>
+          <div class="compare-table-wrapper">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Language</th>
+                  <th>Time Complexity</th>
+                  <th>Space Complexity</th>
+                  <th>Key Paradigm Features used</th>
+                </tr>
+              </thead>
+              <tbody id="compare-table-body">
+                <!-- Javascript will render table rows here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings Slide-in modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">API Keys Configuration</h2>
+        <button class="modal-close" id="close-settings-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5;">
+          This application connects directly with the official Google Gemini API client-side. Your key is stored securely in your local browser storage and is never uploaded elsewhere.
+        </p>
+        
+        <div class="form-group">
+          <label for="gemini-api-key" class="form-label">Gemini API Key</label>
+          <input type="password" class="form-input" id="gemini-api-key" placeholder="AIzaSy...">
+          <span class="form-help">
+            Don't have an API key? You can generate one for free inside the <a href="https://aistudio.google.com/" target="_blank">Google AI Studio <i class="fa-solid fa-up-right-from-square"></i></a>.
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="clear-key-btn">Clear Saved Key</button>
+        <button class="btn-primary" id="save-settings-btn">Apply Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast popup layout -->
+  <div class="toast-msg" id="toast-msg">
+    <i class="fa-solid fa-check-circle toast-icon" id="toast-icon"></i>
+    <span id="toast-text">Action completed successfully.</span>
+  </div>
+
+  <!-- Prism.js Syntax Library CDN imports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+
+  <!-- Core Javascript Implementation -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Operating System Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor Configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Local Antigravity and AI Agent logs
+.gemini/
+.system_generated/
+scratch/
+task.md
+implementation_plan.md
+walkthrough.md
