@@ -2,7 +2,7 @@
 
 // State Management
 const STATE = {
-  apiKey: localStorage.getItem('gemini_api_key') || '',
+  apiKey: localStorage.getItem('gemini_api_key') || 'AQ.Ab8RN6Im4bfOSsjBHmggStvpE26UMzxXHL5_yV0jP9gSsHBbqQ',
   currentLanguage: 'python', // default view language
   currentData: null,         // currently loaded question data
   history: JSON.parse(localStorage.getItem('codementor_history')) || [
